@@ -1,0 +1,208 @@
+import React from "react"
+import { useState} from "react"
+
+// 1. Componente para la búsqueda
+const Filtro=({filtro,guardar_filtro})=>{
+  return(
+    <div>
+      buscar por nombre:<input value={filtro} onChange={guardar_filtro}/>
+    </div>
+  )
+}
+
+// 2. Componente para el formulario
+const FormularioPersona=({agregar_persona,nombre,guardar_nombre,tlf,guardar_tlf})=>{
+  return(
+    <form onSubmit={agregar_persona}>
+      <div>
+        nombre:<input value={nombre} onChange={guardar_nombre}/>
+      </div>
+      <div>
+        telefono:<input value={tlf} onChange={guardar_tlf}/>
+      </div>
+      <div>
+        <button type="submit">guardar</button>
+      </div>
+    </form>
+  )
+}
+
+// 3. Componente para la lista de contactos
+const Personas=({personas_a_mostrar})=>{
+  return(
+    <ul>
+      {personas_a_mostrar.map(dato=><li key={dato.name}>{dato.name} {dato.number}</li>)}
+    </ul>
+  )
+}
+
+const App=()=>{
+  
+  const [persona,actualizar_persona]=useState([
+    {name: 'Arto Hellas',number: '040-123456'},
+    {name: 'Ada Lovelace',number: '39-44-5323523'},
+    {name: 'Dan Abramov',number: '12-43-234345'},
+    {name: 'Mary Poppendieck',number: '39-23-6423122'}
+  ])
+  const [nombre,actualizar_nombre]=useState("")
+  const [tlf,actualizar_tlf]=useState("")
+  const [filtro,actualizar_filtro]=useState("")
+  
+  const guardar_nombre=(evento)=>{
+  actualizar_nombre(evento.target.value)}
+  
+  const guardar_tlf=(evento)=>{
+  actualizar_tlf(evento.target.value)}
+
+  const guardar_filtro=(evento)=>{
+  actualizar_filtro(evento.target.value)}
+
+  const agregar_persona=(evento)=>{
+  evento.preventDefault()
+
+    let EXISTE=persona.some(dato=> dato.name===nombre)
+
+    if(!EXISTE){
+    const atributos_persona={
+      name:nombre,
+      number:tlf}
+
+    actualizar_persona(persona.concat(atributos_persona))
+    actualizar_nombre("")
+    actualizar_tlf("")
+    }
+
+    else{
+      alert("este usario: "+nombre+" ya existe")
+    }}
+
+  const personas_a_mostrar=persona.filter(dato=> dato.name.toLowerCase().includes(filtro.toLowerCase()))
+
+  return(
+    <div>
+      <h2>Agenda telefonica</h2>
+
+      <Filtro filtro={filtro} guardar_filtro={guardar_filtro}/>
+
+      <h3>Agregar nuevo</h3>
+
+      <FormularioPersona 
+        agregar_persona={agregar_persona}
+        nombre={nombre}
+        guardar_nombre={guardar_nombre}
+        tlf={tlf}
+        guardar_tlf={guardar_tlf}
+      />
+
+      <h3>Numeros</h3>
+
+      <Personas personas_a_mostrar={personas_a_mostrar}/>
+    </div>
+  )
+}
+
+export default App./REESTUDIAR OTRO DIA/
+import React from "react"
+import { useState} from "react"
+
+// 1. Componente para la búsqueda
+const Filtro=({filtro,guardar_filtro})=>{
+  return(
+    <div>
+      buscar por nombre:<input value={filtro} onChange={guardar_filtro}/>
+    </div>
+  )
+}
+
+// 2. Componente para el formulario
+const FormularioPersona=({agregar_persona,nombre,guardar_nombre,tlf,guardar_tlf})=>{
+  return(
+    <form onSubmit={agregar_persona}>
+      <div>
+        nombre:<input value={nombre} onChange={guardar_nombre}/>
+      </div>
+      <div>
+        telefono:<input value={tlf} onChange={guardar_tlf}/>
+      </div>
+      <div>
+        <button type="submit">guardar</button>
+      </div>
+    </form>
+  )
+}
+
+// 3. Componente para la lista de contactos
+const Personas=({personas_a_mostrar})=>{
+  return(
+    <ul>
+      {personas_a_mostrar.map(dato=><li key={dato.name}>{dato.name} {dato.number}</li>)}
+    </ul>
+  )
+}
+
+const App=()=>{
+  
+  const [persona,actualizar_persona]=useState([
+    {name: 'Arto Hellas',number: '040-123456'},
+    {name: 'Ada Lovelace',number: '39-44-5323523'},
+    {name: 'Dan Abramov',number: '12-43-234345'},
+    {name: 'Mary Poppendieck',number: '39-23-6423122'}
+  ])
+  const [nombre,actualizar_nombre]=useState("")
+  const [tlf,actualizar_tlf]=useState("")
+  const [filtro,actualizar_filtro]=useState("")
+  
+  const guardar_nombre=(evento)=>{
+  actualizar_nombre(evento.target.value)}
+  
+  const guardar_tlf=(evento)=>{
+  actualizar_tlf(evento.target.value)}
+
+  const guardar_filtro=(evento)=>{
+  actualizar_filtro(evento.target.value)}
+
+  const agregar_persona=(evento)=>{
+  evento.preventDefault()
+
+    let EXISTE=persona.some(dato=> dato.name===nombre)
+
+    if(!EXISTE){
+    const atributos_persona={
+      name:nombre,
+      number:tlf}
+
+    actualizar_persona(persona.concat(atributos_persona))
+    actualizar_nombre("")
+    actualizar_tlf("")
+    }
+
+    else{
+      alert("este usario: "+nombre+" ya existe")
+    }}
+
+  const personas_a_mostrar=persona.filter(dato=> dato.name.toLowerCase().includes(filtro.toLowerCase()))
+
+  return(
+    <div>
+      <h2>Agenda telefonica</h2>
+
+      <Filtro filtro={filtro} guardar_filtro={guardar_filtro}/>
+
+      <h3>Agregar nuevo</h3>
+
+      <FormularioPersona 
+        agregar_persona={agregar_persona}
+        nombre={nombre}
+        guardar_nombre={guardar_nombre}
+        tlf={tlf}
+        guardar_tlf={guardar_tlf}
+      />
+
+      <h3>Numeros</h3>
+
+      <Personas personas_a_mostrar={personas_a_mostrar}/>
+    </div>
+  )
+}
+
+export default App

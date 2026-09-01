@@ -1,0 +1,147 @@
+import React from 'react'
+import { useState,useEffect} from "react"
+import servicios from './servicios/persona'
+  
+// 1. Componente para la búsqueda
+const Filtro=({filtro,guardar_filtro})=>{
+  return(
+    <div>
+      buscar por nombre:<input value={filtro} onChange={guardar_filtro}/>
+    </div>
+  )
+}
+
+// 2. Componente para el formulario
+const FormularioPersona=({agregar_persona,nombre,guardar_nombre,tlf,guardar_tlf})=>{
+  return(
+    <form onSubmit={agregar_persona}>
+      <div>
+        nombre:<input value={nombre} onChange={guardar_nombre}/>
+      </div>
+      <div>
+        telefono:<input value={tlf} onChange={guardar_tlf}/>
+      </div>
+      <div>
+        <button type="submit">guardar</button>
+      </div>
+    </form>
+  )
+}
+
+// 3. Componente para la lista de contactos
+const Personas = ({ personas_a_mostrar, eliminar_persona }) => {
+  return (
+    <ul>
+      {personas_a_mostrar.map(dato => 
+        <li key={dato.id}>
+          {dato.name} {dato.number} {' '}
+          <button onClick={() => eliminar_persona(dato.id, dato.name)}>
+            eliminar
+          </button>
+        </li>
+      )}
+    </ul>
+  )
+}
+
+const App=()=>{
+
+  
+  const [persona,actualizar_persona]=useState([])
+  const [nombre,actualizar_nombre]=useState("")
+  const [tlf,actualizar_tlf]=useState("")
+  const [filtro,actualizar_filtro]=useState("")
+
+  
+  //extare los datos de la db e impedior que lo pida en cada render
+  useEffect(()=>{servicios.datos_bd().then(datos=>{actualizar_persona(datos)})},[])
+
+  const eliminar_persona = (id, nombre) => {
+  if (window.confirm(`¿Estás seguro de eliminar a ${nombre}?`)) {
+    servicios
+      .eliminar(id)
+      .then(() => {
+        // Si todo sale bien, lo quitamos de la pantalla
+        actualizar_persona(persona.filter(p => p.id !== id))
+      })
+      .catch(error => {
+        // Si falla (ej. ya no existe en el servidor)
+        alert(`El contacto '${nombre}' ya fue eliminado del servidor`)
+        actualizar_persona(persona.filter(p => p.id !== id))
+      })
+  }
+}
+ 
+  const guardar_nombre=(evento)=>{
+  actualizar_nombre(evento.target.value)}
+  
+  const guardar_tlf=(evento)=>{
+  actualizar_tlf(evento.target.value)}
+
+  const guardar_filtro=(evento)=>{
+  actualizar_filtro(evento.target.value)}
+
+  const agregar_persona=(evento)=>{
+  evento.preventDefault()
+
+    let EXISTE=persona.some(dato=> dato.name===nombre)
+
+    if(!EXISTE){
+    const atributos_persona={
+      name:nombre,
+      number:tlf}
+    
+    servicios.agregar(atributos_persona).then(
+      dato=>{
+        actualizar_persona(persona.concat(dato))
+        actualizar_nombre("")
+        actualizar_tlf("")
+    
+      })
+    }
+
+   else{
+      if(window.confirm(`${nombre} ya esta agregado en la agenda, ¿reemplazar el numero viejo con uno nuevo?`)){
+        const atributos_actualizados={
+          name:persona_existente.name,
+          number:tlf}
+
+        servicios.actualizar(persona_existente.id,atributos_actualizados)
+          .then(dato_actualizado=>{
+            actualizar_persona(persona.map(p=> p.id!==persona_existente.id ? p : dato_actualizado))
+            actualizar_nombre("")
+            actualizar_tlf("")
+          })
+          .catch(error=>{
+            alert(`el contacto '${nombre}' ya habia sido eliminado del servidor`)
+            actualizar_persona(persona.filter(p=> p.id!==persona_existente.id))
+          })
+      }
+    }}
+
+  const personas_a_mostrar=persona.filter(dato=> dato.name.toLowerCase().includes(filtro.toLowerCase()))
+
+  return(
+    <div>
+      <h2>Agenda telefonica</h2>
+
+      <Filtro filtro={filtro} guardar_filtro={guardar_filtro}/>
+
+      <h3>Agregar nuevo</h3>
+
+      <FormularioPersona 
+        agregar_persona={agregar_persona}
+        nombre={nombre}
+        guardar_nombre={guardar_nombre}
+        tlf={tlf}
+        guardar_tlf={guardar_tlf}
+      />
+
+      <h3>Numeros</h3>
+
+      <Personas personas_a_mostrar={personas_a_mostrar} eliminar_persona={eliminar_persona}/>
+    </div>
+  )
+}
+
+export default App

@@ -1,0 +1,53 @@
+import React from "react"
+import { useState} from "react"
+
+const App=({notas:nota_actual})=>{
+  const [notas,set_notas]=useState(nota_actual)
+  const [new_nota,setnew_notas]=useState("")
+  const [mostrar,mostrar_todas]=useState(true)
+
+  let mostrar1
+
+  if(mostrar){
+    //mostrar todo el array sea true o false
+    mostrar1=notas }
+  else{
+    //mostrar solo true
+    mostrar1=notas.filter(dato=>dato.importante==true)}
+
+  const agregar_nota=(evento)=>{
+    evento.preventDefault()
+    console.log("formulario enviado")
+
+    const cargar_nota={
+      contenido:new_nota,
+      importante:Math.random()<0.5,
+      id:notas.length+1}
+
+    //actaulizar el array original dle main
+    set_notas(notas.concat(cargar_nota))
+    setnew_notas("")
+    }
+  
+  //actualizar notas y reacrgar la pagina 
+  const actualizar_notas=(evento)=>{
+    setnew_notas(evento.target.value)}
+
+  return(
+    <div>
+      <h1>notas</h1>
+      <button onClick={()=>mostrar_todas(!mostrar)}>
+        {mostrar_todas===true ? "mostrar solo importantes":"mostar todas" }
+      </button>
+      <ul>
+        {mostrar1.map(dato=><li key={dato.id}>{dato.contenido}</li>)}
+      </ul>
+    <form onSubmit={agregar_nota} >
+      <input value={new_nota} onChange={actualizar_notas}/>
+      <button type="submit">Guardar</button>
+    </form>
+    </div>
+  )
+}
+
+export default App

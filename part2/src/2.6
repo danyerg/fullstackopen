@@ -1,0 +1,39 @@
+import React from "react"
+import { useState} from "react"
+
+const App=()=>{
+  const [nombre,actualizar_nombre]=useState("")
+  const [persona,actualizar_persona]=useState([{name: 'Arto Hellas'}])
+
+  const guardar_nombre=(evento)=>{
+    actualizar_nombre((evento.target.value))}
+  
+  const agregar_persona=(evento)=>{
+    evento.preventDefault()
+
+    const atributos_persona={
+      name:nombre}
+
+    actualizar_persona(persona.concat(atributos_persona))
+    actualizar_nombre("")}
+
+  return(
+    <div>
+      <form onSubmit={agregar_persona}>
+        <div>
+          <input value={nombre} onChange={guardar_nombre}/>
+        </div>
+        <div>
+          <button type="submit">guardar</button>
+        </div>
+        <div>
+          <ul>
+            {persona.map(dato=><li key={dato.name}>{dato.name}</li>)}
+          </ul>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default App
