@@ -1,5 +1,10 @@
 import axios from 'axios'
-const dbURL="http://localhost:3001/persons"
+
+//url fija
+/*const dbURL="http://localhost:3001/api/personas"*/
+
+//url relativa
+const dbURL="/api/personas"
 
 const datos_bd=()=>{
     const request=axios.get(dbURL)
