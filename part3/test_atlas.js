@@ -1,4 +1,4 @@
-//no me funcionaba mongo nube eso es la solucion 
+//no me funcionaba mongo nube eso es la solucion
 const dns=require('dns')
 dns.setServers(['8.8.8.8','8.8.4.4'])
 

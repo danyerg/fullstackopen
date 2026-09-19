@@ -6,7 +6,7 @@ const mongoose=require("mongoose")
 //permite usar la url local y de render
 const url=process.env.MONGODB_URI
 
-//quitar avertencias //conectar con la db 
+//quitar avertencias //conectar con la db
 mongoose.set('strictQuery',false)
 mongoose.connect(url)
 
@@ -21,7 +21,7 @@ const persona_esquema=new mongoose.Schema({
                 //si es menor de 8 no es valido si es 7 no vale
                 if(v.length<=7){return false}
 
-                //si partes No es 2 significa que el split no se activo 2 veces 
+                //si partes No es 2 significa que el split no se activo 2 veces
                 //y no debe tener 2 giones creo
                 else if(partes.length!==2){return false}
 
@@ -37,7 +37,7 @@ const persona_esquema=new mongoose.Schema({
             }//cierre validator
             ,message:"el numero debe tener el formato xx-xxxxxx"
         }//cierrevalidate
-        
+
         }//cierre number
 })//cierre del esquema
 
@@ -45,11 +45,11 @@ const persona_esquema=new mongoose.Schema({
 persona_esquema.set('toJSON',{
 
     transform:(document,returndObject)=>{
-        
+
         //cambia el _id a string
         returndObject.id=returndObject._id.toString()
 
-        //elimina la id de nose y la __v de nose 
+        //elimina la id de nose y la __v de nose
         delete returndObject._id
         delete returndObject.__v
     }
