@@ -1,11 +1,10 @@
+require('dotenv').config()//permite usar las variables locales de la pc 
 const express=require('express')
 const morgan=require('morgan')
+const cors=require('cors') //se usa cors para permitirle al fornted acceder a los datos del bakend
+const persona=require('./models/persona.js')//importamos el esquema
+const app=express() //app puede utilizar las herraminetas de express
 
- //se usa cors para permitirle al fornted acceder a los datos del bakend
-const cors=require('cors')
-
-//app puede utilizar las herraminetas de express
-const app=express()
 
 //middleware 
 app.use(cors())
@@ -18,89 +17,113 @@ morgan.token('body',(req)=>JSON.stringify(req.body))
 //informacion en string... nose
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body')) 
 
-
-//lista de objetos
-let personas=[
-  {id:1,name:'Arto Hellas',number:'040-123456'},
-  {id:2,name:'Ada Lovelace',number:'39-44-5323523'},
-  {id:3,name:'Dan Abramov',number:'12-43-234345'},
-  {id:4,name:'Mary Poppendieck',number:'39-23-6423122'}
-]
+//ENDPOINTS 
 
 //responde con la lista de objetos a entar en esa url 
-app.get("/api/personas",(req,res)=>{
-    res.json(personas)
+app.get("/api/personas",(req,res,next)=>{
+    persona.find({}).then(resultado=>{
+        console.log(resultado)
+        res.json(resultado)
+    }).catch(error=>{next(error)})
 })
 
-//
-app.get("/api/personas/:id",(req,res)=>{
+//responde con el usario que el clienet pida solo un dato 
+app.get("/api/personas/:id",(req,res,next)=>{
     
     //req= recibe lo que el clinete envia al servidor
-    const id=Number(req.params.id)
-    const persona=personas.find(buscar=>buscar.id===id)
+    persona.findById(req.params.id).then(resultado=>{
 
-    //responde con un solo objeto 
-    if(persona){
-        //responde con los objetos de una sola persona 
-        res.json(persona)
-    }
-    else{
-        //responde que hubo un error
-        res.status(404).end()
-    }
+        //si lo encontro responde con ese dato
+        if(resultado){
+            res.json(resultado)}
+        
+        //responde 404 que no lo encontro 
+        else{
+            res.status(404).end()}
+
+    }).catch(error=>{next(error)})
 })
 
 //metodo para eliminar personas especifica por id
-app.delete("/api/personas/:id",(req,res)=>{
-    //obtener id de la url 
-    const id=Number(req.params.id)
+app.delete("/api/personas/:id",(req,res,next)=>{
 
-    //buscar i eliminar a la persona y crera un arry con los que cumplan
-    personas=personas.filter(buscar=>buscar.id!==id)
+    //busca por la id y lo elimina dorectamente de la db
+    persona.findByIdAndDelete(req.params.id).then(resultado=>{
 
     //responde que todo salio bien 
     res.status(204).end()
+
+    }).catch(error=>{next(error)})
 })
 
 //metodo para añadir personas
-app.post("/api/personas",(req,res)=>{
+app.post("/api/personas",(req,res,next)=>{
     //extrae los datos enviados por el usaurio (en la url)
     const body=req.body
 
-    //revisar si name esta vacio y si ya existe
-    if(!body.name){
-        return res.status(400).json({error:"el nombre es obligatorio"})
-    }else{
-        const existe_name=personas.find(buscar=>buscar.name===body.name)
-        if(existe_name){
-            return res.status(400).json({error:"el nombre debe ser unico"})
-        }
-
-    }
-
-    //revisar si el nmr esta vacio
-    if(!body.number){
-        return res.status(400).json({error:"el numero es obligatorio"})
-    }
-
-    //asignarle el id a la persona nueva (una nueva clave:valor)
-    const nueva_persona={
-        id:Math.floor(Math.random()*1000000),
+    //usasr la variable de la plantilla y crear persona
+    const nueva_persona=new persona({
         name:body.name,
         number:body.number
-    }
+    })
 
-    //meterlo en la db local 
-    personas=personas.concat(nueva_persona)
-
-    //solo muetra el nuevo 
-    console.log(nueva_persona)
-    console.log(personas)
-
-    //responde con el objeto obtenido 
-    res.json(nueva_persona) 
+    //guarda la nueva persona e imprime solo eso datos 
+    nueva_persona.save().then(resultado=>{
+        res.json(resultado)
+    }).catch(error=>{next(error)})
+ 
 })
 
+//actualizar numero
+app.put("/api/personas/:id",(req,res,next)=>{
+
+    //paquete de la url
+    const body=req.body
+
+    persona.findByIdAndUpdate(req.params.id,{name:body.name,number:body.number},
+        {new:true,runValidators:true,context:'query'})
+    .then(resultado=>{
+        res.json(resultado)
+    }).catch(error=>{next(error)})
+})
+
+//informacion de codumentos y fecha
+app.get("/info",(req,res,next)=>{
+
+    //cuenta todos los documentos
+    persona.countDocuments({}).then(resultado=>{
+        //fecha actual
+        const fecha=new Date()
+        
+        //envia la cantidad y fecha actual 
+        res.send(`La agenda tiene ${resultado} personas \nFecha ${fecha}`)
+        
+    }).catch(error=>{next(error)})
+})
+
+//funcion para errors del catch
+const errorHandler=(error,req,res,next)=>{
+
+    //imprime el tipo error 
+    console.log(error.message)
+
+    //error de tipo id
+    if(error.name==="CastError"){
+        
+        //detiene la ejecucuion de la funcion 
+        return res.status(400).send({error:'id mal formado'})}
+    
+    else if(error.name==="ValidationError"){
+        return res.status(400).json({error:error.message})
+    }
+    
+    //en el caso de otro error se lo pasa la manejador de errores 
+    next(error)
+
+}
+
+//compruba al final si hubo un error de tipo catch sin resolver
+app.use(errorHandler)
 
 //puerto del server usa uno dinamico de la app o el puerto 3001
 const PORT=process.env.PORT || 3001 

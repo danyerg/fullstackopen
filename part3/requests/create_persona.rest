@@ -1,7 +1,7 @@
-POST https://agenda-telefonica-5bnu.onrender.com/api/personas
+POST http://localhost:3001/api/personas
 Content-Type: application/json
 
 {
-    "name":"carlos maza",
-    "number":"0414-1234567"
+    "name":"ma",
+    "number":"11223347"
 }
