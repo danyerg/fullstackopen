@@ -171,3 +171,48 @@ test('crear blog sin token devuelve 401',async()=>{
     .send(nuevo_blog)
     .expect(401)
 })
+
+test('si falta likes, por defecto es 0',async()=>{
+    const nuevo_blog={
+        titulo:'Blog sin likes',
+        author:'Josue',
+        url:'http://test.com'
+        //sin likes pa probar
+    }
+
+    await api.post('/api/blogs')
+    .set('Authorization','Bearer '+token)
+    .send(nuevo_blog)
+    .expect(201)
+    .expect('Content-Type',/application\/json/)
+
+    const res=await api.get('/api/blogs')
+    const blog_guardado=res.body.find(b=>b.titulo==='Blog sin likes')
+
+    assert.strictEqual(blog_guardado.likes,0)
+})
+
+test('si falta titulo o url, devuelve 400',async()=>{
+    
+    // 1. Probamos sin titulo
+    const blog_sin_titulo={
+        author:'Josue',
+        url:'http://test.com'
+    }
+
+    await api.post('/api/blogs')
+    .set('Authorization','Bearer '+token)
+    .send(blog_sin_titulo)
+    .expect(400)
+
+    // 2. Probamos sin url
+    const blog_sin_url={
+        titulo:'Blog sin url',
+        author:'Josue'
+    }
+
+    await api.post('/api/blogs')
+    .set('Authorization','Bearer '+token)
+    .send(blog_sin_url)
+    .expect(400)
+})

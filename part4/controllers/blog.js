@@ -38,7 +38,7 @@ blogs_router.post('/',middleware.user_extractor,async(req,res,next)=>{
         titulo:body.titulo,
         author:body.author,
         url:body.url,
-        likes:body.likes,
+        likes:body.likes || 0,
         user:usuario._id    
     })
     

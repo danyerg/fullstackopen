@@ -3,9 +3,15 @@ const mongoose=require('mongoose')
 
 //creacion del molde de la db
 const esquema_blog=new mongoose.Schema({
-    titulo:String,
+    titulo:{
+        type:String,
+        required:true
+    },   
     author:String,
-    url:String,
+    url:{
+        type:String,
+        required:true
+    },
     likes:Number,
     user:{
 

@@ -2,6 +2,36 @@ const dummy=()=>{
     return 1
 }
 
+//funcion que cuneta el author con mas likes
+const mas_likes=(blogs)=>{
+    
+    //autor con mas likes 
+    let max_likes=0
+    let max_author=""
+
+   //busca y quita (autores) duplicados
+    const authores=[...new Set(blogs.map(buscar=>buscar.author))]
+
+    //(como se quito dupliciados "maria,maria,luis") ahora es maria,luis
+    for(const author of authores){
+
+        //guarda los autores repetidos (blogs,author)
+        const actual=blogs.filter(buscar=>buscar.author===author)
+
+        //suma los likes
+        const likes=actual.reduce((suma,b)=>suma+b.likes,0)
+
+        //compara los likes mas alto con el nuevo
+        if(likes>max_likes){
+            max_likes=likes
+            max_author=author}
+    }
+
+    return{author:max_author,likes:max_likes}
+
+
+}
+
 //funcion que cuenta los likes de cada objeto
 const total_likes=(blogs)=>{
 
@@ -67,4 +97,4 @@ const contar_blog=(blogs)=>{
 
     return {author:max_autor,blogs:max_cantidad}
 }
-module.exports={dummy,total_likes,blog_favorito,contar_blog}
+module.exports={dummy,total_likes,blog_favorito,contar_blog,mas_likes}

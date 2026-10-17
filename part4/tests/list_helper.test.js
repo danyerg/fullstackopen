@@ -85,3 +85,21 @@ describe('author con mas blogs',()=>{
 
 
 })
+
+//para saber el author con mas likes
+describe('para saber el author con mas likes',()=>{
+
+    const blogs = [
+    { author: 'Edsger W. Dijkstra', likes: 5 },
+    { author: 'Robert C. Martin', likes: 10 },
+    { author: 'Edsger W. Dijkstra', likes: 12 }
+]
+
+    test('devuelve al autor y sus likes',()=>{
+
+        const result=list_helper.mas_likes(blogs)
+        assert.deepStrictEqual(result, { author: 'Edsger W. Dijkstra', likes: 17 })
+    })
+
+
+})
